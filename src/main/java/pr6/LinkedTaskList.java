@@ -146,7 +146,6 @@ public class LinkedTaskList extends AbstractTaskList {
             clone.add(current.getTask());
             current = current.getNext();
         }
-        clone.toString();
         return clone;
     }
 
