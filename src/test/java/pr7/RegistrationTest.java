@@ -21,6 +21,7 @@ public class RegistrationTest {
     private static final String webFormURL = "https://inventory.edu-netcracker.com/pages/registration.xhtml";
     private static final String httpURL = "http://inventory.edu-netcracker.com/pages/registration.xhtml";
     private static final String registeredURL = "https://inventory.edu-netcracker.com/login.jsp?justRegistered=true";
+    private static final String loginedURL = "https://inventory.edu-netcracker.com/pages/startpage.xhtml";
     private static final String registerBtn = "registerForm:j_idt26";
     private static final String loginField = "registerForm:username";
     private static final String passwdField = "registerForm:password";
@@ -37,8 +38,8 @@ public class RegistrationTest {
     @Before
     public void setUp() {
         ChromeOptions options = new ChromeOptions();
-        //options.addArguments("--headless"); // полезно для ускорения тестов - не запускать визуальную часть браузера.
-        options.addArguments("--no-sandbox"); // без этого хромне заведется
+        options.addArguments("--headless"); // полезно для ускорения тестов - не запускать визуальную часть браузера.
+        options.addArguments("--no-sandbox");
         options.addArguments("--disable-gpu");
         options.addArguments("--disable-dev-shm-usage");
         options.addArguments("--disable-infobars");
@@ -48,7 +49,6 @@ public class RegistrationTest {
         driver = new ChromeDriver(options);
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-        //driver.get(webFormURL);
     }
 
     /**
@@ -228,10 +228,7 @@ public class RegistrationTest {
         //Registration with already registered email
         fillTheForm(loginGenerator(), ConfProperties.getProperty("user2_password"),
                 ConfProperties.getProperty("user2_password2"), registeredEmail, Role.READ_WRITE.getRole());
-        /*if(registeredURL.equals(driver.getCurrentUrl())){
-            System.err.println("Registration with already registered email was successful");
-        }*/
-        assertEquals(ErrorMessage.REGISTERED_EMAIL.getMessage(), driver.findElement(By.xpath(emailError)).getText());
+        assertEquals(webFormURL, driver.getCurrentUrl());
     }
 
     /**
@@ -290,9 +287,7 @@ public class RegistrationTest {
         driver.findElement(By.name("j_username")).sendKeys(login);
         driver.findElement(By.name("j_password")).sendKeys(ConfProperties.getProperty("user2_password"));
         driver.findElement(By.name("submit")).click();
-        //assertEquals(driver.getCurrentUrl(), "https://inventory.edu-netcracker.com/pages/startpage.xhtml");
-        assertEquals(driver.getCurrentUrl(), registeredURL);
-
+        assertEquals(loginedURL, driver.getCurrentUrl());
     }
 
     public String loginGenerator() {
@@ -305,7 +300,7 @@ public class RegistrationTest {
 
     @After
     public void tearDown() {
-        // driver.quit();
+        driver.quit();
         String verificationErrorString = verificationErrors.toString();
         if (!"".equals(verificationErrorString)) {
             fail(verificationErrorString);
