@@ -52,7 +52,7 @@ public class RegistrationTest {
     }
 
     /**
-     * метод для заполнения полей
+     * Method for filling fields
      */
     public void fillTheForm(String name, String password, String confPassword, String mail, String userRole) {
         driver.get(webFormURL);
@@ -66,173 +66,106 @@ public class RegistrationTest {
     }
 
     /**
-     * TC_1.1
+     * TC_1 New user registration with different roles
      */
     @Test
-    public void testAdminRoleRegistration() {
-        //Admin role
+    public void testRoleRegistration() {
+        //Admin role TC_1.1
         fillTheForm(loginGenerator(), ConfProperties.getProperty("user2_password"),
                 ConfProperties.getProperty("user2_password2"), mailGenerator(), Role.ADMIN.getRole());
         assertEquals(registeredURL, driver.getCurrentUrl());
-    }
 
-    /**
-     * TC_1.2
-     */
-    @Test
-    public void testReadOnlyRoleRegistration() {
-        //Read-only role
+        //Read-only role TC_1.2
         fillTheForm(loginGenerator(), ConfProperties.getProperty("user3_password"),
                 ConfProperties.getProperty("user3_password2"), mailGenerator(), Role.READ_ONLY.getRole());
         assertEquals(registeredURL, driver.getCurrentUrl());
-    }
 
-    /**
-     * TC_1.3
-     */
-    @Test
-    public void testReadWriteRoleRegistration() {
-        //Read-write role
+        //Read-write role TC_1.3
         fillTheForm(loginGenerator(), ConfProperties.getProperty("user4_password"),
                 ConfProperties.getProperty("user4_password2"), mailGenerator(), Role.READ_WRITE.getRole());
         assertEquals(registeredURL, driver.getCurrentUrl());
     }
 
     /**
-     * TC_2.1
+     * TC_2 Cheching the "Username" textbox
      */
     @Test
-    public void testUsernameValid() {
-        //valid username
+    public void testUsername() {
+        //valid username TC_2.1
         fillTheForm(loginGenerator(), ConfProperties.getProperty("user10_password"),
                 ConfProperties.getProperty("user10_password2"), mailGenerator(), Role.READ_WRITE.getRole());
         assertEquals(registeredURL, driver.getCurrentUrl());
-    }
 
-    /**
-     * TC_2.2
-     */
-    @Test
-    public void testUsernameRegistered() {
-        //Registration with username which was already registred
+        //Registration with username which was already registered TC_2.2
         fillTheForm(registeredLogin, ConfProperties.getProperty("user10_password"),
                 ConfProperties.getProperty("user10_password2"), mailGenerator(), Role.READ_WRITE.getRole());
         assertEquals(ErrorMessage.REGISTERED_LOGIN.getMessage(), driver.findElement(By.xpath(loginError)).getText());
-    }
 
-    /**
-     * TC_2.3
-     */
-    @Test
-    public void testUsernameLength() {
-        //Registration with username which length less than 6
+        //Registration with username which length less than 6 TC_2.3
         fillTheForm(ConfProperties.getProperty("user1_name"), ConfProperties.getProperty("user1_password"),
                 ConfProperties.getProperty("user1_password2"), ConfProperties.getProperty("user1_email"), Role.READ_WRITE.getRole());
         assertEquals(ErrorMessage.INVALID_LOGIN.getMessage(), driver.findElement(By.xpath(loginError)).getText());
 
-    }
-
-    /**
-     * TC_2.4
-     */
-    @Test
-    public void testUsernameAlphanumeric() {
-        //Registration with username which contains non alphanumeric symbols
+        //Registration with username which contains non alphanumeric symbols TC_2.4
         fillTheForm(ConfProperties.getProperty("user11_name"), ConfProperties.getProperty("user11_password"),
                 ConfProperties.getProperty("user11_password2"), ConfProperties.getProperty("user11_email"), Role.READ_WRITE.getRole());
         assertEquals(ErrorMessage.INVALID_LOGIN.getMessage(), driver.findElement(By.xpath(loginError)).getText());
     }
 
     /**
-     * TC_3.1
+     * TC_3 Cheching the "Password" textbox
      */
     @Test
-    public void testValidPassword() {
-        //Valid data for "Password" textbox
+    public void testPassword() {
+        //Valid data for "Password" textbox TC_3.1
         fillTheForm(loginGenerator(), ConfProperties.getProperty("user10_password"),
                 ConfProperties.getProperty("user10_password2"), mailGenerator(), Role.READ_WRITE.getRole());
         assertEquals(registeredURL, driver.getCurrentUrl());
-    }
 
-    /**
-     * TC_3.2
-     */
-    @Test
-    public void testPasswordLength() {
-        //Registration with password which length less than 8
+        //Registration with password which length less than 8 TC_3.2
         fillTheForm(ConfProperties.getProperty("user12_name"), ConfProperties.getProperty("user12_password"),
                 ConfProperties.getProperty("user12_password2"), ConfProperties.getProperty("user12_email"), Role.READ_WRITE.getRole());
         assertEquals(ErrorMessage.PASSWORD_LENGTH.getMessage(), driver.findElement(By.xpath(passwordError)).getText());
-    }
 
-    /**
-     * TC_3.3
-     */
-    @Test
-    public void testPasswordUppercaseLetter() {
-        //Registration with password that doesn't contain at least one uppercase letter
+        //Registration with password that doesn't contain at least one uppercase letter TC_3.3
         fillTheForm(ConfProperties.getProperty("user13_name"), ConfProperties.getProperty("user13_password"),
                 ConfProperties.getProperty("user13_password2"), ConfProperties.getProperty("user13_email"), Role.READ_WRITE.getRole());
         assertEquals(ErrorMessage.PASSWORD_UPPER_LETTER.getMessage(), driver.findElement(By.xpath(passwordError)).getText());
-    }
 
-    /**
-     * TC_3.4
-     */
-    @Test
-    public void testPasswordAlphanumeric() {
-        //Registration with password that doesn't contain at least one non alphanumeric symbol
+        //Registration with password that doesn't contain at least one non alphanumeric symbol TC_3.4
         fillTheForm(ConfProperties.getProperty("user14_name"), ConfProperties.getProperty("user14_password"),
                 ConfProperties.getProperty("user14_password2"), ConfProperties.getProperty("user14_email"), Role.READ_WRITE.getRole());
         assertEquals(ErrorMessage.PASSWORD_ALPHANUMERIC.getMessage(), driver.findElement(By.xpath(passwordError)).getText());
-    }
 
-    /**
-     * TC_3.5
-     */
-    @Test
-    public void testPasswordConfirmed() {
-        //Registration with password that wasn't correctly confirmed
+        //Registration with password that wasn't correctly confirmed TC_3.5
         fillTheForm(ConfProperties.getProperty("user16_name"), ConfProperties.getProperty("user16_password"),
                 ConfProperties.getProperty("user16_password2"), ConfProperties.getProperty("user16_email"), Role.READ_WRITE.getRole());
         assertEquals(ErrorMessage.PASSWORD_MATCH.getMessage(), driver.findElement(By.xpath(passwordError)).getText());
     }
 
     /**
-     * TC_4.1
+     * TC_4 Checking the "Email" textbox
      */
     @Test
-    public void testValidEmail() {
-        //Valid data for "Email" textbox
+    public void testEmail() {
+        //Valid data for "Email" textbox TC_4.1
         fillTheForm(loginGenerator(), ConfProperties.getProperty("user10_password"),
                 ConfProperties.getProperty("user10_password2"), mailGenerator(), Role.READ_WRITE.getRole());
         assertEquals(registeredURL, driver.getCurrentUrl());
-    }
 
-    /**
-     * TC_4.2
-     */
-    @Test
-    public void testInvalidEmail() {
-        //Registration with invalid email
+        //Registration with invalid email TC_4.2
         fillTheForm(loginGenerator(), ConfProperties.getProperty("user15_password"),
                 ConfProperties.getProperty("user15_password2"), ConfProperties.getProperty("user15_email"), Role.READ_WRITE.getRole());
         assertEquals(ErrorMessage.INVALID_EMAIL.getMessage(), driver.findElement(By.xpath(emailError)).getText());
-    }
 
-    /**
-     * TC_4.3
-     */
-    @Test
-    public void testRegisteredEmail() {
-        //Registration with already registered email
+        //Registration with already registered email TC_4.3
         fillTheForm(loginGenerator(), ConfProperties.getProperty("user2_password"),
                 ConfProperties.getProperty("user2_password2"), registeredEmail, Role.READ_WRITE.getRole());
-        assertEquals(webFormURL, driver.getCurrentUrl());
+        assertEquals(webFormURL, driver.getCurrentUrl()); // тест не проходит, т.к. функционал не соответствует документации
     }
 
     /**
-     * TC_5.1
+     * TC_5 Checking the fields after incorrect input
      */
     @Test
     public void testFields() {
@@ -240,24 +173,21 @@ public class RegistrationTest {
         fillTheForm(ConfProperties.getProperty("user11_name"), ConfProperties.getProperty("user11_password"),
                 ConfProperties.getProperty("user11_password2"), ConfProperties.getProperty("user11_email"), Role.ADMIN.getRole());
         assertEquals(ConfProperties.getProperty("user11_name"), driver.findElement(By.id(loginField)).getAttribute("value"));
-        //assertEquals(ConfProperties.getProperty("user11_password"), driver.findElement(By.id(passwdField)).getAttribute("value"));
-        //assertEquals(ConfProperties.getProperty("user11_password2"), driver.findElement(By.id(confirmPasswdField)).getAttribute("value"));
         assertEquals(ConfProperties.getProperty("user11_email"), driver.findElement(By.id(email)).getAttribute("value"));
         assertEquals(Role.ADMIN.getRoleAsAttribute(), driver.findElement(By.id(role)).getAttribute("value"));
     }
 
     /**
-     * TC_6
+     * TC_6 Checking the availability of the form using the https protocol
      */
     @Test
     public void testURL() {
-        //Checking the availability of the form using the https protocol
         driver.get(httpURL);
         assertEquals(webFormURL, driver.getCurrentUrl());
     }
 
     /**
-     * TC_7.1 - 8.1
+     * TC_7
      */
     @Test
     public void testPasswordHiding() {
@@ -268,12 +198,12 @@ public class RegistrationTest {
         driver.findElement(By.id(confirmPasswdField)).sendKeys("Password1+");
         driver.findElement(By.id(email)).sendKeys("mail@mail.com");
         driver.findElement(By.id(hidePassword)).click();
-        boolean isChecked = driver.findElement(By.tagName("input")).isSelected();
+        boolean isChecked = driver.findElement(By.tagName("input")).isSelected(); //false
         assertEquals(isChecked, driver.findElement(By.id(passwdField)).isDisplayed());
     }
 
     /**
-     * TC_9.1-10.1
+     * TC_10 Checking access to the system
      */
     @Test
     public void testAccessWithoutConfirmation() {
@@ -287,7 +217,7 @@ public class RegistrationTest {
         driver.findElement(By.name("j_username")).sendKeys(login);
         driver.findElement(By.name("j_password")).sendKeys(ConfProperties.getProperty("user2_password"));
         driver.findElement(By.name("submit")).click();
-        assertEquals(loginedURL, driver.getCurrentUrl());
+        assertEquals(registeredURL, driver.getCurrentUrl()); //пользователь получает доступ без email подтверждения
     }
 
     public String loginGenerator() {
