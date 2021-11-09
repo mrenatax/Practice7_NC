@@ -14,6 +14,7 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.support.ui.Select;
 
 import java.io.File;
@@ -50,6 +51,7 @@ public class RegistrationTest {
         options.addArguments("--start-maximized");
         System.setProperty("webdriver.chrome.driver", "");
         WebDriverManager.chromedriver().setup();
+        //driver = new EdgeDriver();
         driver = new ChromeDriver(options);
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
