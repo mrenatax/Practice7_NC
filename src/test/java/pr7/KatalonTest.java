@@ -37,17 +37,16 @@ public class KatalonTest {
     public void testUntitledTestCase() {
         driver.get("https://www.google.com/");
         driver.findElement(By.name("q")).clear();
-        driver.findElement(By.name("q")).sendKeys("Netcracker");
-        driver.findElement(By.name("q")).sendKeys(Keys.ENTER);
-        driver.findElement(By.xpath("//div[@id='rso']/div/div/div/div/div/a/h3")).click();
+        driver.get("https://www.netcracker.com/");
         driver.findElement(By.linkText("Careers")).click();
-        driver.findElement(By.linkText("see all open positions")).click();
+        driver.findElement(By.xpath("//a[@id='search-jobs']/span")).click();
         driver.findElement(By.xpath("//div[@id='jobdept-group']/div/button/span")).click();
-        driver.findElement(By.linkText("Quality Assurance")).click();
+        driver.findElement(By.xpath("//div[@id='jobdept-group']/div/div/ul/li[14]/a/span")).click();
         new Select(driver.findElement(By.id("jobdept"))).selectByVisibleText("Quality Assurance");
         driver.findElement(By.xpath("//div[@id='location-group']/div/button/span")).click();
-        driver.findElement(By.linkText("Canada")).click();
-        new Select(driver.findElement(By.id("location"))).selectByVisibleText("Canada");
+        driver.findElement(By.xpath("//div[@id='location-group']/div/div/ul/li[12]/a/span")).click();
+        new Select(driver.findElement(By.id("location"))).selectByVisibleText("Netherlands");
+        driver.findElement(By.xpath("//form[@id='positionslist-filterform']/fieldset/div/label")).click();
     }
 
     @After
