@@ -87,7 +87,7 @@ public class RegistrationTest {
     }
 
     /**
-     * TC_2 Cheching the "Username" textbox
+     * TC_2 Checking the "Username" textbox
      */
     @Test
     public void testUsername() {
@@ -113,7 +113,7 @@ public class RegistrationTest {
     }
 
     /**
-     * TC_3 Cheching the "Password" textbox
+     * TC_3 Checking the "Password" textbox
      */
     @Test
     public void testPassword() {
