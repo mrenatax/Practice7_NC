@@ -1,4 +1,4 @@
-package pr7;
+package pr7.Selenium;
 
 import java.io.FileInputStream;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package pr7;
+package pr7.Selenium;
 
 public enum Role {
     ADMIN("Admin"),

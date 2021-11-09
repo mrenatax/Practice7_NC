@@ -1,4 +1,4 @@
-package pr7;
+package pr7.Selenium;
 
 public enum ErrorMessage {
     INVALID_LOGIN("Login must be alphanumeric string with length => 6 and <= 50."),

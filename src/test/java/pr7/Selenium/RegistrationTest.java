@@ -1,4 +1,4 @@
-package pr7;
+package pr7.Selenium;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.apache.commons.lang.RandomStringUtils;
