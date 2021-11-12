@@ -2,7 +2,6 @@ package pr7.Selenium;
 
 public enum ErrorMessage {
     INVALID_LOGIN("Login must be alphanumeric string with length => 6 and <= 50."),
-    //В документации: The user with such username has been already registered. Please fill out another username.
     REGISTERED_LOGIN("User with such login already exists."),
     PASSWORD_LENGTH("Password length must me >= 8 and <= 50."),
     PASSWORD_UPPER_LETTER("At least one upper letter must be in password"),
