@@ -17,7 +17,7 @@ public class ConfProperties {
     }
 
     /**
-     * метод для возврата строки со значением из файла с настройками
+     * Method for returning a string with a value from a file with parameters
      */
     public static String getProperty(String key) {
         return PROPERTIES.getProperty(key);
