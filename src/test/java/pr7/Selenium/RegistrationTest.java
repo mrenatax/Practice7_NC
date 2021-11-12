@@ -6,7 +6,6 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.junit.*;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.OutputType;
@@ -14,7 +13,6 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.support.ui.Select;
 
 import java.io.File;
@@ -22,7 +20,6 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class RegistrationTest {
-    private StringBuffer verificationErrors = new StringBuffer();
     private static WebDriver driver;
     private static final String webFormURL = "https://inventory.edu-netcracker.com/pages/registration.xhtml";
     private static final String httpURL = "http://inventory.edu-netcracker.com/pages/registration.xhtml";
@@ -40,10 +37,9 @@ public class RegistrationTest {
     private static final String registeredEmail = "mrenatax.rd@gmail.com";
     private static final String registeredLogin = "Userr2";
 
-    @Before
-    public void setUp() {
+    @BeforeClass
+    public static void setUp() {
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless"); // полезно для ускорения тестов - не запускать визуальную часть браузера.
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-gpu");
         options.addArguments("--disable-dev-shm-usage");
@@ -51,7 +47,6 @@ public class RegistrationTest {
         options.addArguments("--start-maximized");
         System.setProperty("webdriver.chrome.driver", "");
         WebDriverManager.chromedriver().setup();
-        //driver = new EdgeDriver();
         driver = new ChromeDriver(options);
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
@@ -202,7 +197,7 @@ public class RegistrationTest {
     }
 
     /**
-     * TC_8
+     * TC_7-8
      */
     @Test
     public void testPasswordHiding() throws IOException {
@@ -213,10 +208,10 @@ public class RegistrationTest {
         takeScreenshot("screenshots\\TS8\\TC1_Step1.jpeg");
         driver.findElement(By.id(confirmPasswdField)).sendKeys("Password1+");
         takeScreenshot("screenshots\\TS8\\TC1_Step2.jpeg");
+        assertEquals("password", driver.findElement(By.id(passwdField)).getAttribute("type"));
         driver.findElement(By.id(hidePassword)).click();
         takeScreenshot("screenshots\\TS8\\TC1_Step3.jpeg");
-        boolean isChecked = driver.findElement(By.tagName("input")).isSelected(); //всегда false, возможно ли проверить через Selenium как-то иначе?
-        assertEquals(isChecked, driver.findElement(By.id(passwdField)).isDisplayed());
+        assertEquals("text", driver.findElement(By.id(passwdField)).getAttribute("type"));
     }
 
     /**
@@ -251,12 +246,8 @@ public class RegistrationTest {
         return RandomStringUtils.random(8, "abcdefghijklmnopqrstuvwxyz") + "@" + "testmail.com";
     }
 
-    @After
-    public void tearDown() {
+    @AfterClass
+    public static void tearDown() {
         driver.quit();
-        String verificationErrorString = verificationErrors.toString();
-        if (!"".equals(verificationErrorString)) {
-            fail(verificationErrorString);
-        }
     }
 }

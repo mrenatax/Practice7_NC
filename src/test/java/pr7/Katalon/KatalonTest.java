@@ -15,7 +15,6 @@ public class KatalonTest {
     private WebDriver driver;
     private String baseUrl;
     private boolean acceptNextAlert = true;
-    private StringBuffer verificationErrors = new StringBuffer();
     JavascriptExecutor js;
 
     @Before
@@ -47,9 +46,5 @@ public class KatalonTest {
     @After
     public void tearDown() {
         driver.quit();
-        String verificationErrorString = verificationErrors.toString();
-        if (!"".equals(verificationErrorString)) {
-            fail(verificationErrorString);
-        }
     }
 }
