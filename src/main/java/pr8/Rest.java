@@ -4,6 +4,7 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -35,9 +36,14 @@ public class Rest {
      * @throws IOException exception
      */
     public HttpResponse httpGet(String serviceName) throws IOException {
-        CloseableHttpClient httpclient = HttpClients.createDefault(); //Creating a HttpClient object
-        HttpGet httpGet = new HttpGet(serviceName); //Creating a HttpGet object
-        return httpclient.execute(httpGet);
+        try {
+            CloseableHttpClient httpclient = HttpClients.createDefault(); //Creating a HttpClient object
+            HttpGet httpGet = new HttpGet(serviceName); //Creating a HttpGet object
+            return httpclient.execute(httpGet);
+        } catch (ClientProtocolException | IllegalArgumentException e) {
+            System.err.println("\nInvalid client protocol:");
+            return null;
+        }
     }
 
     /**
@@ -48,13 +54,17 @@ public class Rest {
      * @throws IOException exception
      */
     public void writer(String serviceName, String filename) throws IOException {
-        HttpResponse hr = httpGet(serviceName);
-        Scanner sc = new Scanner(hr.getEntity().getContent());
-        BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
-        while (sc.hasNext()) {
-            writer.write(sc.nextLine());
+        try {
+            HttpResponse httpResponse = httpGet(serviceName);
+            Scanner sc = new Scanner(httpResponse.getEntity().getContent());
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
+            while (sc.hasNext()) {
+                writer.write(sc.nextLine());
+            }
+            writer.close();
+        } catch (NullPointerException e) {
+            System.err.println("Service must be a valid url");
         }
-        writer.close();
     }
 
     /**
@@ -62,14 +72,14 @@ public class Rest {
      *
      * @throws IOException exception
      */
-    public void getHeader() throws IOException {
+    public String getHeader() throws IOException {
         Header[] headers = httpGet(xmlService).getAllHeaders();
         for (Header header : headers) {
             if (header.getName().equals("X-TA-Course-Example-Header")) {
-                System.out.println("Значение нестандартного http header'а X-Ta-Course-Example-Header:\n"
-                        + header.getValue() + "\n");
+                return (header.getValue());
             }
         }
+        return "Header not found";
     }
 
     /**
