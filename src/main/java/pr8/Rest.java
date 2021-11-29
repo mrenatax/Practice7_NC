@@ -27,6 +27,10 @@ import javax.xml.parsers.ParserConfigurationException;
 public class Rest {
     private static final String xmlService = "http://www.mocky.io/v2/5bebe91f3300008500fbc0e3";
     private static final String jsonService = "http://www.mocky.io/v2/5bed52fd3300004c00a2959d";
+    private static final String jsonpathNamePath = "$.breakfast_menu.food[*].name";
+    private static final String filterCaloriesPath = "$.breakfast_menu.food[?(@.calories < 700)].price";
+    private static final String maxCaloriePath = "$.max($.breakfast_menu.food[*].calories)";
+    private static final String filterNumbersPath = "$.max($.breakfast_menu.numbers[*])";
 
     /**
      * Method for http client  work
@@ -41,7 +45,6 @@ public class Rest {
             HttpGet httpGet = new HttpGet(serviceName); //Creating a HttpGet object
             return httpclient.execute(httpGet);
         } catch (ClientProtocolException | IllegalArgumentException e) {
-            System.err.println("\nInvalid client protocol:");
             return null;
         }
     }
@@ -53,7 +56,7 @@ public class Rest {
      * @param filename    xml/json file
      * @throws IOException exception
      */
-    public void writer(String serviceName, String filename) throws IOException {
+    public int writer(String serviceName, String filename) throws IOException {
         try {
             HttpResponse httpResponse = httpGet(serviceName);
             Scanner sc = new Scanner(httpResponse.getEntity().getContent());
@@ -62,8 +65,10 @@ public class Rest {
                 writer.write(sc.nextLine());
             }
             writer.close();
+            return 0;
         } catch (NullPointerException e) {
             System.err.println("Service must be a valid url");
+            return -1;
         }
     }
 
@@ -86,68 +91,95 @@ public class Rest {
      * XML parser
      *
      * @param fileName xml file
-     * @throws IOException exception
      */
-    public void parseXML(String fileName) throws IOException {
-        writer(xmlService, fileName);
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    public NodeList parseXML(String fileName) {
         try {
+            writer(xmlService, fileName);
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc = db.parse(new File(fileName));
             doc.getDocumentElement().normalize();
-            NodeList list = doc.getElementsByTagName("food");
-            StringBuilder listBuilder = new StringBuilder("(XML) Список блюд:\n");
-            StringBuilder priceBuilder = new StringBuilder("Цены блюд с калорийностью < 700:\n");
-            int k = 0;
-            String nameOfMostCalorie = "";
-            for (int temp = 0; temp < list.getLength(); temp++) {
-                Node node = list.item(temp);
-                if (node.getNodeType() == Node.ELEMENT_NODE) {
-
-                    Element element = (Element) node;
-                    String name = element.getElementsByTagName("name").item(0).getTextContent(); // get name
-                    listBuilder.append("- ").append(name).append("\n");
-
-                    NodeList salaryNodeList = element.getElementsByTagName("calories");
-                    String calories = salaryNodeList.item(0).getTextContent();
-                    if (Integer.parseInt(calories) < 700) {
-                        priceBuilder.append(element.getElementsByTagName("price").item(0).getTextContent()).append("\n");
-                    }
-                    if (Integer.parseInt(calories) > k) {
-                        k = Integer.parseInt(calories);
-                        nameOfMostCalorie = element.getElementsByTagName("name").item(0).getTextContent();
-                    }
-                }
-            }
-            System.out.println(listBuilder + "\n" + priceBuilder +
-                    "\n" + "Название самого калорийного блюда: " + nameOfMostCalorie);
-        } catch (ParserConfigurationException | IOException | SAXException e) {
+            return doc.getElementsByTagName("food");
+        } catch (IOException | ParserConfigurationException | SAXException e) {
             e.printStackTrace();
+            return null;
         }
     }
 
-    public void parseJson(String fileName) throws IOException {
-        writer(jsonService, fileName);
+    public String getFoodListXML(NodeList list) {
+        StringBuilder listBuilder = new StringBuilder("(XML) Список блюд:\n");
+        for (int temp = 0; temp < list.getLength(); temp++) {
+            Node node = list.item(temp);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                Element element = (Element) node;
+                String name = element.getElementsByTagName("name").item(0).getTextContent(); // get name
+                listBuilder.append("- ").append(name).append("\n");
+            }
+        }
+        return listBuilder.toString();
+    }
 
-        String jsonpathNamePath = "$.breakfast_menu.food[*].name";
-        DocumentContext jsonContext = JsonPath.parse(new File(fileName));
-        String jsonpathName = jsonContext.read(jsonpathNamePath).toString();
-        System.out.println("\n(JSON) Список блюд:\n" + jsonpathName);
+    public String getFoodPriceLess700CaloriesXML(NodeList list) {
+        StringBuilder priceBuilder = new StringBuilder("Цены блюд с калорийностью < 700:\n");
+        for (int temp = 0; temp < list.getLength(); temp++) {
+            Node node = list.item(temp);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                Element element = (Element) node;
+                NodeList salaryNodeList = element.getElementsByTagName("calories");
+                String calories = salaryNodeList.item(0).getTextContent();
+                if (Integer.parseInt(calories) < 700) {
+                    priceBuilder.append(element.getElementsByTagName("price").item(0).getTextContent()).append("\n");
+                }
+            }
+        }
+        return priceBuilder.toString();
+    }
 
-        String filterCaloriesPath = "$.breakfast_menu.food[?(@.calories < 700)].price";
-        String filterCalories = jsonContext.read(filterCaloriesPath).toString();
-        System.out.println("\nЦены блюд с калорийностью < 700:\n" + filterCalories);
+    public String getMaxCalorieDishXML(NodeList list) {
+        int k = 0;
+        String nameOfMostCalorie = "";
+        for (int temp = 0; temp < list.getLength(); temp++) {
+            Node node = list.item(temp);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                Element element = (Element) node;
+                NodeList salaryNodeList = element.getElementsByTagName("calories");
+                String calories = salaryNodeList.item(0).getTextContent();
+                if (Integer.parseInt(calories) > k) {
+                    k = Integer.parseInt(calories);
+                    nameOfMostCalorie = element.getElementsByTagName("name").item(0).getTextContent();
+                }
+            }
+        }
+        return nameOfMostCalorie;
+    }
 
-        String maxCaloriePath = "$.max($.breakfast_menu.food[*].calories)";
+    public DocumentContext parseJson(String fileName) {
+        try {
+            writer(jsonService, fileName);
+            return JsonPath.parse(new File(fileName));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public String getFoodListJson(DocumentContext jsonContext) {
+        return "\n(JSON) Список блюд:\n" + jsonContext.read(jsonpathNamePath).toString();
+    }
+
+    public String getFoodPriceLess700CaloriesJson(DocumentContext jsonContext) {
+        return ("\nЦены блюд с калорийностью < 700:\n" + jsonContext.read(filterCaloriesPath).toString());
+    }
+
+    public String getMaxNumberJson(DocumentContext jsonContext) {
+        return ("\nМаксимальное число из массива numbers: \n" + jsonContext.read(filterNumbersPath).toString());
+    }
+
+    public String getMaxCalorieDishJson(DocumentContext jsonContext) {
         String maxCalorieString = jsonContext.read(maxCaloriePath).toString();
         double maxCalorie = Double.parseDouble(maxCalorieString);
         String nameOfMaxCaloriePath = "$.breakfast_menu.food.[?(@.calories == " + maxCalorie + " )].name";
-        String nameOfMaxCalorie = jsonContext.read(nameOfMaxCaloriePath).toString();
-        System.out.println("\n Назавние самого калорийного блюда:\n" + nameOfMaxCalorie);
-
-        String filterNumbersPath = "$.max($.breakfast_menu.numbers[*])";
-        String filterNumbers = jsonContext.read(filterNumbersPath).toString();
-        System.out.println("\n Максимальное число из массива numbers: \n" + filterNumbers);
+        return jsonContext.read(nameOfMaxCaloriePath).toString();
     }
 }
